@@ -22,5 +22,6 @@ type routerImp struct {
 func (r *routerImp) SetRouter() *gin.Engine {
 	r.setAppRoutes()
 	r.setChatRoutes()
+	r.setMessagesRoutes()
 	return r.engine
 }

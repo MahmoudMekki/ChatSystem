@@ -11,6 +11,7 @@ func RunMigration() {
 	var chatSystem []*gormigrate.Migration
 	chatSystem = append(chatSystem, listApp()...)
 	chatSystem = append(chatSystem, listChat()...)
+	chatSystem = append(chatSystem, listMessages()...)
 	dbConn, err := database.GetDatabaseConnection()
 	if err != nil {
 		log.Fatal().Msg(err.Error())

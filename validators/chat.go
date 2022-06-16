@@ -31,7 +31,7 @@ func ValidateGetChat() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 			return
 		}
-		numberStr, ok := ctx.Params.Get("number")
+		numberStr, ok := ctx.Params.Get("chat_number")
 		if !ok {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 			return

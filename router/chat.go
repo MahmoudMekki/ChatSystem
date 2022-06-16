@@ -8,6 +8,5 @@ import (
 func (r *routerImp) setChatRoutes() {
 	appEndpoints := r.engine.Group("/api/v1/apps/:token/chats")
 	appEndpoints.POST("", validators.ValidateCreateChat(), chats.CreateChat)
-	appEndpoints.GET("/:number", validators.ValidateGetChat(), chats.GetChat)
-
+	appEndpoints.GET("/:chat_number", validators.ValidateGetChat(), chats.GetChat)
 }

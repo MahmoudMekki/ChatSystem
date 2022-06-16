@@ -1,7 +1,6 @@
 package chats
 
 import (
-	"fmt"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/appDAL"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/chatDAL"
 	"github.com/gin-gonic/gin"
@@ -12,7 +11,6 @@ import (
 func GetChat(ctx *gin.Context) {
 	token := ctx.GetString("token")
 	number := ctx.GetInt("number")
-	fmt.Println(token, number)
 	app, err := appDAL.GetAppByToken(token)
 	if err != nil || app.Id <= 0 {
 		if app.Id > 0 {
