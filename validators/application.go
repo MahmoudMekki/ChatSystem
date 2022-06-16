@@ -1,13 +1,15 @@
 package validators
 
 import (
+	"github.com/MahmoudMekki/ChatSystem/config"
 	"github.com/faceair/jio"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
-func ValidateCreateApplication() gin.HandlerFunc {
+func ValidateCreateUpdateApplication() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		jsonData, err := ioutil.ReadAll(ctx.Request.Body)
 		if err != nil {
@@ -22,6 +24,24 @@ func ValidateCreateApplication() gin.HandlerFunc {
 			return
 		}
 		ctx.Set("name", data["name"])
+		ctx.Next()
+	}
+}
+
+func ValidateGetApplication() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token, ok := ctx.Params.Get("token")
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+			return
+		}
+		size := config.GetEnvVar("TOKEN_SIZE")
+		tokLength, err := strconv.Atoi(size)
+		if err != nil || len(token) != tokLength {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Token"})
+			return
+		}
+		ctx.Set("token", token)
 		ctx.Next()
 	}
 }

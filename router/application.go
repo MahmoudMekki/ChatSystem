@@ -7,5 +7,7 @@ import (
 
 func (r *routerImp) setAppRoutes() {
 	appEndpoints := r.engine.Group("/api/v1/apps")
-	appEndpoints.POST("", validators.ValidateCreateApplication(), application.CreateApp)
+	appEndpoints.POST("", validators.ValidateCreateUpdateApplication(), application.CreateApp)
+	appEndpoints.PUT("/:token", validators.ValidateCreateUpdateApplication(), application.UpdateApp)
+	appEndpoints.GET("/:token", validators.ValidateGetApplication(), application.GetApp)
 }
