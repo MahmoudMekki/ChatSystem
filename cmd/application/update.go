@@ -18,5 +18,9 @@ func UpdateApp(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while updating the app"})
 		return
 	}
+	if app.Id == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "no apps for the provided token"})
+		return
+	}
 	ctx.JSON(http.StatusOK, app)
 }
