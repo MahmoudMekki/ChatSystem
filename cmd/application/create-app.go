@@ -10,7 +10,7 @@ import (
 )
 
 func CreateApp(ctx *gin.Context) {
-	name, _ := ctx.GetQuery("name")
+	name := ctx.GetString("name")
 	token, err := utils.GenerateRandomString()
 	if err != nil {
 		log.Err(err).Msg(err.Error())

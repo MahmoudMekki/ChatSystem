@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/faceair/jio v1.0.1
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-gormigrate/gormigrate/v2 v2.0.2
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/viper v1.12.0
 	gorm.io/driver/mysql v1.3.4
@@ -21,7 +22,7 @@ require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.4 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
