@@ -2,6 +2,7 @@ package models
 
 const (
 	ChatTableName = "chats"
+	ChatMQTopic   = "chats"
 )
 
 type Chat struct {
@@ -11,6 +12,10 @@ type Chat struct {
 	MessageCount  int         `gorm:"column:msg_count;default:0" json:"message_count"`
 	Messages      []Message   `json:"messages,omitempty"`
 	Application   Application `gorm:"foreign_key:application_id" json:"-"`
+}
+type ChatMQMsg struct {
+	ApplicationToken string `json:"token"`
+	Number           int    `json:"number"`
 }
 
 func (c *Chat) TableName() string {

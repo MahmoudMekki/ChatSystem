@@ -1,0 +1,5 @@
+/vendor
+/coverage.html
+/cmd
+/.vscode
+/Gopkg.*

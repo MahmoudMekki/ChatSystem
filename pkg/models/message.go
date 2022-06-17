@@ -2,6 +2,7 @@ package models
 
 const (
 	MessagesTableName = "messages"
+	MessagesMQTopic   = "messages"
 )
 
 type Message struct {

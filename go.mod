@@ -10,6 +10,7 @@ require (
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/viper v1.12.0
+	github.com/streadway/amqp v1.0.0
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/gorm v1.23.6
 )
