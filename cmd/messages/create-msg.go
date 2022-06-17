@@ -1,6 +1,7 @@
 package messages
 
 import (
+	elasticsearch "github.com/MahmoudMekki/ChatSystem/pkg/elastic-search"
 	"github.com/MahmoudMekki/ChatSystem/pkg/models"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/appDAL"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/chatDAL"
@@ -49,6 +50,9 @@ func CreateMsg(ctx *gin.Context) {
 		log.Err(err).Msg(err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the msg"})
 		return
+	}
+	if err = elasticsearch.EsIndex(msg); err != nil {
+		log.Err(err).Msg(err.Error())
 	}
 	ctx.JSON(http.StatusOK, msg)
 }
