@@ -11,6 +11,12 @@ type Message struct {
 	Content string `gorm:"column:content;not null" json:"content"`
 	Chat    Chat   `gorm:"foreign_key:chat_id" json:"-"`
 }
+type MessageIndex struct {
+	AppToken      string `json:"app_token"`
+	ChatNumber    int    `json:"chat_number"`
+	MessageNumber int    `json:"message_number"`
+	Content       string `json:"content"`
+}
 
 func (m *Message) TableName() string {
 	return MessagesTableName

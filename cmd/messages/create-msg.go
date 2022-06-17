@@ -51,7 +51,13 @@ func CreateMsg(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the msg"})
 		return
 	}
-	if err = elasticsearch.EsIndex(msg); err != nil {
+	msgInd := models.MessageIndex{
+		AppToken:      token,
+		ChatNumber:    chatNumber,
+		MessageNumber: msg.Number,
+		Content:       msg.Content,
+	}
+	if err = elasticsearch.EsIndex(msgInd); err != nil {
 		log.Err(err).Msg(err.Error())
 	}
 	ctx.JSON(http.StatusOK, msg)

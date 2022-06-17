@@ -8,9 +8,9 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-func EsIndex(msg models.Message) error {
+func EsIndex(msgInd models.MessageIndex) error {
 	esClient := esClient.GetEsClient()
-	jsonData, err := json.Marshal(msg)
+	jsonData, err := json.Marshal(msgInd)
 	if err != nil {
 		return err
 	}
@@ -18,23 +18,17 @@ func EsIndex(msg models.Message) error {
 	return err
 }
 
-func AutoComplete(keyword string, chatID int) ([]models.Message, error) {
+func AutoComplete(paginator models.Paginator, msgInd models.MessageIndex) (*elastic.SearchResult, error) {
 	esClient := esClient.GetEsClient()
-	likeQuery := elastic.NewMultiMatchQuery(keyword, "content").Type("phrase_prefix")
-	matchQuery := elastic.NewMatchQuery("ChatId", chatID)
-	query := elastic.NewBoolQuery().Must(likeQuery, matchQuery)
-	rslt, err := esClient.Search().Index("msgs").Query(query).Do(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	var messages []models.Message
-	for _, v := range rslt.Hits.Hits {
-		var msg models.Message
-		err := json.Unmarshal(v.Source, &msg)
-		if err != nil {
-			return nil, err
-		}
-		messages = append(messages, msg)
-	}
-	return messages, nil
+	likeQuery := elastic.NewMultiMatchQuery(paginator.GetKeyWord(), "content").Type("phrase_prefix")
+	matchChatQuery := elastic.NewMatchQuery("chat_number", msgInd.ChatNumber)
+	matchTokenQuery := elastic.NewMatchQuery("app_token", msgInd.AppToken)
+	query := elastic.NewBoolQuery().Must(likeQuery, matchChatQuery, matchTokenQuery)
+	rslt, err := esClient.Search().
+		Index("msgs").
+		Query(query).
+		From(paginator.GetOffset()).
+		Size(paginator.GetLimit()).
+		Do(context.Background())
+	return rslt, err
 }

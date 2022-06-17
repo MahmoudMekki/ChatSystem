@@ -89,3 +89,46 @@ func ValidateGetMessage() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func ValidateMsgAutoComplete() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		token, ok := ctx.Params.Get("token")
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+			return
+		}
+		size := config.GetEnvVar("TOKEN_SIZE")
+		tokLength, err := strconv.Atoi(size)
+		if err != nil || len(token) != tokLength {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Token"})
+			return
+		}
+		chatNumStr, ok := ctx.Params.Get("chat_number")
+		if !ok {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request,chat number is required"})
+			return
+		}
+		chatNum, err := strconv.Atoi(chatNumStr)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request,invalid chat number"})
+			return
+		}
+		keyword, _ := ctx.GetQuery("keyword")
+		limitStr, _ := ctx.GetQuery("limit")
+		pageStr, _ := ctx.GetQuery("page")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			limit = 10
+		}
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			page = 1
+		}
+		ctx.Set("token", token)
+		ctx.Set("chat_number", chatNum)
+		ctx.Set("limit", limit)
+		ctx.Set("page", page)
+		ctx.Set("keyword", keyword)
+		ctx.Next()
+	}
+}
