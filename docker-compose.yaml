@@ -40,7 +40,17 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass Insta@2022
+    volumes:
+      - cache:/data
 # Names our volume
 volumes:
   my-db:
   elasticsearch-data:
+  cache:
+    driver: local

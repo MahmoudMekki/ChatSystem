@@ -2,6 +2,7 @@ package chats
 
 import (
 	"github.com/MahmoudMekki/ChatSystem/pkg/models"
+	"github.com/MahmoudMekki/ChatSystem/pkg/redis"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/appDAL"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/chatDAL"
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ func CreateChat(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "no app for this token"})
 		return
 	}
-	latestChatNumber, err := chatDAL.GetMaxNumberOfAppChat(app.Id)
+	latestChatNumber, err := redis.CacheLastChatNumber(token)
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the chat"})
@@ -29,7 +30,7 @@ func CreateChat(ctx *gin.Context) {
 	}
 	chat := models.Chat{
 		ApplicationId: app.Id,
-		Number:        latestChatNumber + 1,
+		Number:        latestChatNumber,
 	}
 	chat, err = chatDAL.CreateChat(chat)
 	if err != nil {
