@@ -1,11 +1,10 @@
 package messages
 
 import (
-	elasticsearch "github.com/MahmoudMekki/ChatSystem/pkg/elastic-search"
+	"encoding/json"
 	"github.com/MahmoudMekki/ChatSystem/pkg/models"
-	"github.com/MahmoudMekki/ChatSystem/pkg/repo/appDAL"
-	"github.com/MahmoudMekki/ChatSystem/pkg/repo/chatDAL"
-	"github.com/MahmoudMekki/ChatSystem/pkg/repo/messageDAL"
+	"github.com/MahmoudMekki/ChatSystem/pkg/rabbit"
+	"github.com/MahmoudMekki/ChatSystem/pkg/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -13,52 +12,29 @@ import (
 
 func CreateMsg(ctx *gin.Context) {
 	token := ctx.GetString("token")
-	app, err := appDAL.GetAppByToken(token)
-	if err != nil || app.Id <= 0 {
-		if app.Id > 0 {
-			log.Err(err).Msg(err.Error())
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the chat"})
-			return
-		}
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "no app for this token"})
-		return
-	}
-	chatNumber := ctx.GetInt("number")
-	chat, err := chatDAL.GetChatByNumber(app.Id, chatNumber)
-	if err != nil || chat.Id <= 0 {
-		if app.Id > 0 {
-			log.Err(err).Msg(err.Error())
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the msg"})
-			return
-		}
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "no chats for this number"})
-		return
-	}
-	latestMsgNumber, err := messageDAL.GetMaxNumberOfAppChat(chat.Id)
+	chatNumber := ctx.GetInt("chat_number")
+	latestMsgNumber, err := redis.CacheLastMsgNumber(token, chatNumber)
 	if err != nil {
 		log.Err(err).Msg(err.Error())
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the msg"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the chat"})
 		return
 	}
-	msg := models.Message{
-		ChatId:  chat.Id,
-		Number:  latestMsgNumber + 1,
-		Content: ctx.GetString("content"),
-	}
-	msg, err = messageDAL.CreateMessage(msg)
+	mqMsg, err := json.Marshal(models.MessageMQMsg{
+		ApplicationToken: token,
+		ChatNumber:       chatNumber,
+		MsgNumber:        latestMsgNumber,
+		Content:          ctx.GetString("content"),
+	})
 	if err != nil {
 		log.Err(err).Msg(err.Error())
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the msg"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the chat"})
 		return
 	}
-	msgInd := models.MessageIndex{
-		AppToken:      token,
-		ChatNumber:    chatNumber,
-		MessageNumber: msg.Number,
-		Content:       msg.Content,
-	}
-	if err = elasticsearch.EsIndex(msgInd); err != nil {
+	err = rabbit.Produce(models.MessagesMQTopic, mqMsg)
+	if err != nil {
 		log.Err(err).Msg(err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error occurred while creating the chat"})
+		return
 	}
-	ctx.JSON(http.StatusOK, msg)
+	ctx.JSON(http.StatusOK, gin.H{"msg_number": latestMsgNumber})
 }

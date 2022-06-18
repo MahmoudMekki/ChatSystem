@@ -24,7 +24,7 @@ func establishRabbitMQ() {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-	_, err = publishChannel.QueueDeclare(models.ChatMQTopic, true, false, false, false, nil)
+	_, err = publishChannel.QueueDeclare(models.MessagesMQTopic, true, false, false, false, nil)
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}

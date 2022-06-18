@@ -27,16 +27,3 @@ func GetMessageByNumber(chatID, number int) (msg models.Message, err error) {
 	}
 	return msg, nil
 }
-
-func GetMaxNumberOfAppChat(chatID int) (int, error) {
-	var chat models.Chat
-	dbConn, err := database.GetDatabaseConnection()
-	if err != nil {
-		return 0, err
-	}
-	err = dbConn.Raw(`select * from messages where chat_id =? and number = (select MAX(number) from messages where chat_id=?)`, chatID, chatID).Scan(&chat).Error
-	if err != nil {
-		return 0, err
-	}
-	return chat.Number, nil
-}

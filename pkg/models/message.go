@@ -18,6 +18,12 @@ type MessageIndex struct {
 	MessageNumber int    `json:"message_number"`
 	Content       string `json:"content"`
 }
+type MessageMQMsg struct {
+	ApplicationToken string `json:"token"`
+	ChatNumber       int    `json:"chat_number"`
+	MsgNumber        int    `json:"msg_number"`
+	Content          string `json:"content"`
+}
 
 func (m *Message) TableName() string {
 	return MessagesTableName

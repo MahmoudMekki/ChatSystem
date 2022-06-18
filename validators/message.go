@@ -45,7 +45,7 @@ func ValidateCreateMessage() gin.HandlerFunc {
 			return
 		}
 		ctx.Set("token", token)
-		ctx.Set("number", chatNum)
+		ctx.Set("chat_number", chatNum)
 		ctx.Set("content", data["content"])
 		ctx.Next()
 	}
