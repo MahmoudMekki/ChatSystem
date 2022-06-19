@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/MahmoudMekki/ChatSystem/clients/rabbitMQ"
+	redisclient "github.com/MahmoudMekki/ChatSystem/clients/redis"
+	"github.com/MahmoudMekki/ChatSystem/config"
 	"github.com/MahmoudMekki/ChatSystem/database"
 	"github.com/MahmoudMekki/ChatSystem/migration"
 	"github.com/MahmoudMekki/ChatSystem/router"
@@ -13,17 +17,22 @@ import (
 	"time"
 )
 
-func main() {
+func init() {
 	err := database.CreateDBConnection()
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
 	migration.RunMigration()
-	gin.SetMode(gin.ReleaseMode)
+	rabbitMQ.GetRabbitMQCPublishChannel()
+	redisclient.GetRedisClient()
+}
+func main() {
+	gin.SetMode(config.GetEnvVar("GIN_MODE"))
 	engine := gin.Default()
 	routerInterface := router.NewRouter(engine)
 	engine = routerInterface.SetRouter()
-	srv := &http.Server{Addr: ":8080", Handler: engine}
+	srv := &http.Server{Addr: config.GetEnvVar("WEB_SERVER_PORT"), Handler: engine}
+	log.Info().Msg(fmt.Sprintf("web server is running on localhost%s", config.GetEnvVar("WEB_SERVER_PORT")))
 	go func() {
 		log.Err(srv.ListenAndServe())
 	}()

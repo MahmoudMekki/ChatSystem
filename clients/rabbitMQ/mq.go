@@ -1,6 +1,7 @@
 package rabbitMQ
 
 import (
+	"fmt"
 	"github.com/MahmoudMekki/ChatSystem/config"
 	"github.com/MahmoudMekki/ChatSystem/pkg/models"
 	"github.com/rs/zerolog/log"
@@ -32,6 +33,7 @@ func establishRabbitMQ() {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
+	log.Info().Msg(fmt.Sprintf("Queue is running on %s ", config.GetEnvVar("RABBITMQ_URL")))
 }
 
 func GetRabbitMQCPublishChannel() *amqp.Channel {

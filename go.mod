@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-gormigrate/gormigrate/v2 v2.0.2
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/jasonlvhit/gocron v0.0.1
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/viper v1.12.0

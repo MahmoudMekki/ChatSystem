@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/MahmoudMekki/ChatSystem/bin/crons"
 	"github.com/MahmoudMekki/ChatSystem/clients/rabbitMQ"
 	"github.com/MahmoudMekki/ChatSystem/database"
 	elasticsearch "github.com/MahmoudMekki/ChatSystem/pkg/elastic-search"
@@ -9,6 +10,7 @@ import (
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/appDAL"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/chatDAL"
 	"github.com/MahmoudMekki/ChatSystem/pkg/repo/messageDAL"
+	"github.com/jasonlvhit/gocron"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,7 +19,7 @@ func init() {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
-
+	rabbitMQ.GetRabbitMQCConsumeChannel()
 }
 func main() {
 	channel := rabbitMQ.GetRabbitMQCConsumeChannel()
@@ -120,6 +122,11 @@ func main() {
 				continue
 			}
 		}
+	}()
+	go func() {
+		gocron.Every(30).Minutes().Do(crons.UpdateAppChatCount)
+		gocron.Every(35).Minutes().Do(crons.UpdateAppChatCount)
+		<-gocron.Start()
 	}()
 	<-forever
 }

@@ -27,3 +27,11 @@ func GetChatByNumber(appID, number int) (chat models.Chat, err error) {
 	}
 	return chat, nil
 }
+func UpdateChatMessagesCount() (err error) {
+	dbConn, err := database.GetDatabaseConnection()
+	if err != nil {
+		return err
+	}
+	err = dbConn.Exec("update chats set msg_count = (select count(id) from messages where chat_id= chats.id)").Error
+	return err
+}

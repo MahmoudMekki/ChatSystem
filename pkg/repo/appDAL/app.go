@@ -39,3 +39,12 @@ func GetAppByToken(token string) (app models.Application, err error) {
 	}
 	return app, nil
 }
+
+func UpdateAppChatsCount() (err error) {
+	dbConn, err := database.GetDatabaseConnection()
+	if err != nil {
+		return err
+	}
+	err = dbConn.Exec("update apps set chat_count = (select count(id) from chats where app_id= apps.id)").Error
+	return err
+}
