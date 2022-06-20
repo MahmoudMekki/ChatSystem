@@ -33,7 +33,7 @@ func GetAppByToken(token string) (app models.Application, err error) {
 	if err != nil {
 		return models.Application{}, err
 	}
-	err = dbConn.Table(models.ApplicationsTableName).Where("token=?", token).Find(&app).Error
+	err = dbConn.Preload("Chats").Table(models.ApplicationsTableName).Where("token=?", token).Find(&app).Error
 	if err != nil {
 		return app, err
 	}
